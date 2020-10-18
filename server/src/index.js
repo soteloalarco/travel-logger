@@ -7,11 +7,13 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const middlewares = require('./middlewares');
+const logs = require('./api/logs');
 
 const app = express();
 
 mongoose.connect(process.env.DATABASE_URL, {
   useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 app.use(morgan('common'));
@@ -26,6 +28,8 @@ app.get('/', (req, res) => {
     message: 'Hello World!',
   });
 });
+
+app.use('/api/logs', logs);
 
 // In case route is invalid
 app.use(middlewares.notFound);
