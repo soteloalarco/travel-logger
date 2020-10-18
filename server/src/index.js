@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
 
+const middlewares = require('./middlewares');
+
 const app = express();
 app.use(morgan('common'));
 app.use(helmet());
@@ -18,23 +20,9 @@ app.get('/', (req, res) => {
 });
 
 // In case route is invalid
-app.use((req, res, next) => {
-  const error = new Error(`Not Found - ${req.originalUrl}`);
-  // forwarding to error handleing
-  res.status(404);
-  next(error);
-});
-
+app.use(middlewares.notFound);
 // Error handler middleware
-// eslint-disable-next-line no-unused-vars
-app.use((error, req, res, next) => {
-  const statusCode = res.Statuscode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
-  res.json({
-    message: error.message,
-    stack: process.env.NODE_ENV === 'production' ? 'pancake' : error.stack,
-  });
-});
+app.use(middlewares.errorHandler);
 
 const port = process.env.PORT || 1337;
 
