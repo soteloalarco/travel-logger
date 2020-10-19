@@ -8,3 +8,6 @@ body {
   overflow: hidden;
 }
 
+.marker {
+  transform: translate(-50%, -100%);
+}
