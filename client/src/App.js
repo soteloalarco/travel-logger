@@ -18,13 +18,14 @@ const App = () => {
     zoom: 5
   });
 
+  const getEntries = async() => {
+    const logEntries = await listLogEntries();
+    setLogEntries(logEntries);
+  };
+
   // this function will run once when the component is mounting for fetching the markers
   useEffect(() => {
-    (async () => {
-      const logEntries = await listLogEntries();
-      setLogEntries(logEntries);
-      console.log(logEntries);
-    })();
+    getEntries();
   }, []);
 
   const showAddMarkerPopup = (event) => {
@@ -45,9 +46,8 @@ const App = () => {
     >
       {
         logEntries.map(entry => (
-          <>
+          <React.Fragment key={entry._id}>
             <Marker 
-              key={entry._id}
               latitude={entry.latitude} 
               longitude={entry.longitude} 
               >
@@ -83,10 +83,11 @@ const App = () => {
                     <h3>{entry.title}</h3>
                     <p>{entry.comments}</p>
                     <small>Visited on: {new Date(entry.visitDate).toLocaleDateString()}</small>
+                    {entry.image && <img src={entry.image} alt={entry.title}/>}
                   </div>
                 </Popup>) : null
             }
-          </>
+          </React.Fragment>
         ))
       }
 
@@ -120,7 +121,10 @@ const App = () => {
                   onClose={() => setAddEntryLocation(null)}
                   anchor="top" >
                   <div className="popup">
-                    <LogEntryForm location={addEntryLocation}/>
+                    <LogEntryForm onClose={()=> {
+                      setAddEntryLocation(null);
+                      getEntries();
+                    }} location={addEntryLocation}/>
                   </div>
             </Popup>
           </>
